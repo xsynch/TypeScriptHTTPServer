@@ -7,8 +7,8 @@ const app = express();
 app.use(middlewareLogResponses);
 app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 app.get("/api/healthz", middlewareMetricsInc, handlerReadiness);
-app.get('/api/metrics', handlerHitsCounter);
-app.get('/api/reset', handlerResetCounter);
+app.get('/admin/metrics', handlerHitsCounter);
+app.get('/admin/reset', handlerResetCounter);
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });

@@ -1,7 +1,7 @@
 import type {Request, Response } from "express";
 import { config } from "../config.js";
 
-const counterConent = `
+const counterContent = `
 <html>
   <body>
     <h1>Welcome, Chirpy Admin</h1>
@@ -12,7 +12,7 @@ const counterConent = `
 
 export async function handlerHitsCounter(_:Request, res: Response){
 	res.set('Content-Type','text/html; charset=utf-8');
-	res.send(counterConent);
+	res.send(counterContent);
 	res.end();
 }
 
