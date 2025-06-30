@@ -1,5 +1,6 @@
 import { config } from "../config.js";
-const counterContent = `
+export async function handlerHitsCounter(_, res) {
+    const counterContent = `
 <html>
   <body>
     <h1>Welcome, Chirpy Admin</h1>
@@ -7,7 +8,6 @@ const counterContent = `
   </body>
 </html>
 `;
-export async function handlerHitsCounter(_, res) {
     res.set('Content-Type', 'text/html; charset=utf-8');
     res.send(counterContent);
     res.end();
