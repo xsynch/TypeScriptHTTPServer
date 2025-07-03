@@ -3,49 +3,60 @@ import {Request, Response} from "express";
 
 
 type responseData = {
-    valid: boolean;
+    cleanedBody: string;
 };
 
 type errorData = {
     error: string;
 }
 
+const bannedWords: string[] = ["KERFUFFLE", "SHARBERT","FORNAX"];
+
 export async function handlerValidateChirp(req:Request, res: Response){
     
     // let body = ""
     const responseBody: responseData = {
-        valid: false,
+        cleanedBody: "",
     }
     const errorBody: errorData = {
         error:"",
     }
+
     
     // req.on("data", (chunk) => {
     //     body += chunk;
     // });
     // req.on("end", () => {
         res.header("Content-Type","application/json");
-        try {
-            let parsedBody = req.body
+        // try {
+            let parsedBody  = req.body
+            
             if(parsedBody.body.length > 140){
-                errorBody.error = "Chirp is too long"
-                
-                res.status(400).send(JSON.stringify(errorBody))
+                throw new Error("Chirp is too long");
+   
                 
             } else {
-                responseBody.valid = true;
+                let cleanedString = "";
+                for(let word of parsedBody.body.split(" ")){
+                    // console.log(word);
+                    if(bannedWords.indexOf(word.toUpperCase()) !== -1 ||  bannedWords.includes(word)){
+                        word = "****"
+                    }
+                    cleanedString += `${word} `;
+                }
+                responseBody.cleanedBody = cleanedString.trimEnd();
                 
                 res.status(200).send(JSON.stringify(responseBody));
                 
             }
 
-        } catch (error){
-            const err = ensureError(error)            
+        // } catch (error){
+        //     const err = ensureError(error)            
             
-            errorBody.error = err.message;
-            res.status(400).send(JSON.stringify(errorBody))
+        //     errorBody.error = err.message;
+        //     res.status(400).send(JSON.stringify(errorBody))
             
-        }
+        // }
         res.end()
     // })
     

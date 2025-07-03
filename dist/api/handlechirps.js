@@ -1,7 +1,8 @@
+const bannedWords = ["KERFUFFLE", "SHARBERT", "FORNAX"];
 export async function handlerValidateChirp(req, res) {
     // let body = ""
     const responseBody = {
-        valid: false,
+        cleanedBody: "",
     };
     const errorBody = {
         error: "",
@@ -11,22 +12,28 @@ export async function handlerValidateChirp(req, res) {
     // });
     // req.on("end", () => {
     res.header("Content-Type", "application/json");
-    try {
-        let parsedBody = req.body;
-        if (parsedBody.body.length > 140) {
-            errorBody.error = "Chirp is too long";
-            res.status(400).send(JSON.stringify(errorBody));
-        }
-        else {
-            responseBody.valid = true;
-            res.status(200).send(JSON.stringify(responseBody));
-        }
+    // try {
+    let parsedBody = req.body;
+    if (parsedBody.body.length > 140) {
+        throw new Error("Chirp is too long");
     }
-    catch (error) {
-        const err = ensureError(error);
-        errorBody.error = err.message;
-        res.status(400).send(JSON.stringify(errorBody));
+    else {
+        let cleanedString = "";
+        for (let word of parsedBody.body.split(" ")) {
+            // console.log(word);
+            if (bannedWords.indexOf(word.toUpperCase()) !== -1 || bannedWords.includes(word)) {
+                word = "****";
+            }
+            cleanedString += `${word} `;
+        }
+        responseBody.cleanedBody = cleanedString.trimEnd();
+        res.status(200).send(JSON.stringify(responseBody));
     }
+    // } catch (error){
+    //     const err = ensureError(error)            
+    //     errorBody.error = err.message;
+    //     res.status(400).send(JSON.stringify(errorBody))
+    // }
     res.end();
     // })
 }
