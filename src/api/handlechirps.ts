@@ -1,5 +1,5 @@
-import { error } from "console";
 import {Request, Response} from "express";
+import { ForbiddenError, UnauthorizedError, NotFoundError,BadRequestError } from "./handleErrors.js";
 
 
 type responseData = {
@@ -32,7 +32,7 @@ export async function handlerValidateChirp(req:Request, res: Response){
             let parsedBody  = req.body
             
             if(parsedBody.body.length > 140){
-                throw new Error("Chirp is too long");
+                throw new BadRequestError("Chirp is too long. Max length is 140");
    
                 
             } else {

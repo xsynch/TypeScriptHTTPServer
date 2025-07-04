@@ -1,3 +1,4 @@
+import { BadRequestError } from "./handleErrors.js";
 const bannedWords = ["KERFUFFLE", "SHARBERT", "FORNAX"];
 export async function handlerValidateChirp(req, res) {
     // let body = ""
@@ -15,7 +16,7 @@ export async function handlerValidateChirp(req, res) {
     // try {
     let parsedBody = req.body;
     if (parsedBody.body.length > 140) {
-        throw new Error("Chirp is too long");
+        throw new BadRequestError("Chirp is too long. Max length is 140");
     }
     else {
         let cleanedString = "";
