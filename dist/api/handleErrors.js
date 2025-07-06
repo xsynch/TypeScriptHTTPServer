@@ -35,5 +35,8 @@ export function errorHandler(err, req, res, next) {
     else if (err instanceof BadRequestError) {
         res.status(400).json(errResponse);
     }
+    else {
+        res.status(500).json(errResponse);
+    }
     console.error(err.message);
 }
