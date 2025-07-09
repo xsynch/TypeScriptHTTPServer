@@ -1,5 +1,11 @@
 import {Request, Response} from "express";
-import { ForbiddenError, UnauthorizedError, NotFoundError,BadRequestError } from "./handleErrors.js";
+
+
+import { createChirp, deleteChirp, getAllChirps } from "../db/queries/chirps.js";
+import { config } from "../config.js";
+import {BadRequestError } from "./handleErrors.js";
+
+
 
 
 type responseData = {
@@ -14,7 +20,7 @@ const bannedWords: string[] = ["KERFUFFLE", "SHARBERT","FORNAX"];
 
 export async function handlerValidateChirp(req:Request, res: Response){
     
-    // let body = ""
+    
     const responseBody: responseData = {
         cleanedBody: "",
     }
@@ -23,12 +29,9 @@ export async function handlerValidateChirp(req:Request, res: Response){
     }
 
     
-    // req.on("data", (chunk) => {
-    //     body += chunk;
-    // });
-    // req.on("end", () => {
+
         res.header("Content-Type","application/json");
-        // try {
+
             let parsedBody  = req.body
             
             if(parsedBody.body.length > 140){
@@ -50,15 +53,9 @@ export async function handlerValidateChirp(req:Request, res: Response){
                 
             }
 
-        // } catch (error){
-        //     const err = ensureError(error)            
-            
-        //     errorBody.error = err.message;
-        //     res.status(400).send(JSON.stringify(errorBody))
-            
-        // }
-        res.end()
-    // })
+
+        
+
     
 
     
@@ -70,4 +67,54 @@ function ensureError(value: unknown): Error {
 
     const error = new Error(stringVal)
     return error;
+}
+
+export async function handlerChirps(req:Request, res:Response){
+    type chirpParams = {
+        body: string;
+        userId: string;
+    }
+    const chirpReq: chirpParams = req.body 
+    if (!chirpReq.body || !chirpReq.userId){
+        throw new BadRequestError("New Chirp requires body and userid ")
+    }
+    if(chirpReq.body.length > 140){
+        throw new BadRequestError("Chirp should be less than 140 characters")
+    }
+    let cleanedString = "";
+    for(let word of chirpReq.body.split(" ")){
+        if(bannedWords.indexOf(word.toUpperCase()) !== -1 ||  bannedWords.includes(word)){
+            word = "****"
+        }
+        cleanedString += `${word} `;
+    }
+    chirpReq.body = cleanedString.trimEnd();
+    const result = await createChirp({
+        body: chirpReq.body,
+        user_id: chirpReq.userId
+    })            
+    res.status(201).json({
+        id: result.id,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+        body: result.body,
+        userId: result.user_id,
+    })
+
+
+
+}
+
+export async function handlerGetAllChirps(req:Request,res:Response){
+    type chirpData = {
+        id: string;
+        createdAt: string;
+        updatedAt: string;
+        body: string;
+        userId: string;
+    }
+
+    const chirpResults = await getAllChirps();
+    // console.log(chirpResults);
+    res.status(200).json(chirpResults);
 }

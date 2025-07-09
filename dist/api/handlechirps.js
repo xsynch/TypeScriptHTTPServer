@@ -1,19 +1,14 @@
+import { createChirp, getAllChirps } from "../db/queries/chirps.js";
 import { BadRequestError } from "./handleErrors.js";
 const bannedWords = ["KERFUFFLE", "SHARBERT", "FORNAX"];
 export async function handlerValidateChirp(req, res) {
-    // let body = ""
     const responseBody = {
         cleanedBody: "",
     };
     const errorBody = {
         error: "",
     };
-    // req.on("data", (chunk) => {
-    //     body += chunk;
-    // });
-    // req.on("end", () => {
     res.header("Content-Type", "application/json");
-    // try {
     let parsedBody = req.body;
     if (parsedBody.body.length > 140) {
         throw new BadRequestError("Chirp is too long. Max length is 140");
@@ -30,13 +25,6 @@ export async function handlerValidateChirp(req, res) {
         responseBody.cleanedBody = cleanedString.trimEnd();
         res.status(200).send(JSON.stringify(responseBody));
     }
-    // } catch (error){
-    //     const err = ensureError(error)            
-    //     errorBody.error = err.message;
-    //     res.status(400).send(JSON.stringify(errorBody))
-    // }
-    res.end();
-    // })
 }
 function ensureError(value) {
     if (value instanceof Error)
@@ -44,4 +32,37 @@ function ensureError(value) {
     let stringVal = 'Something went wrong';
     const error = new Error(stringVal);
     return error;
+}
+export async function handlerChirps(req, res) {
+    const chirpReq = req.body;
+    if (!chirpReq.body || !chirpReq.userId) {
+        throw new BadRequestError("New Chirp requires body and userid ");
+    }
+    if (chirpReq.body.length > 140) {
+        throw new BadRequestError("Chirp should be less than 140 characters");
+    }
+    let cleanedString = "";
+    for (let word of chirpReq.body.split(" ")) {
+        if (bannedWords.indexOf(word.toUpperCase()) !== -1 || bannedWords.includes(word)) {
+            word = "****";
+        }
+        cleanedString += `${word} `;
+    }
+    chirpReq.body = cleanedString.trimEnd();
+    const result = await createChirp({
+        body: chirpReq.body,
+        user_id: chirpReq.userId
+    });
+    res.status(201).json({
+        id: result.id,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+        body: result.body,
+        userId: result.user_id,
+    });
+}
+export async function handlerGetAllChirps(req, res) {
+    const chirpResults = await getAllChirps();
+    // console.log(chirpResults);
+    res.status(200).json(chirpResults);
 }

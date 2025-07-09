@@ -1,10 +1,6 @@
-const results = process.loadEnvFile();
-export let config = {
-    fileserverHits: 0,
-    dbURL: checkEnvVar('DB_URL'),
-};
+process.loadEnvFile();
 function checkEnvVar(key) {
-    const val = process.env.DB_URL;
+    const val = process.env[key];
     if (val) {
         return val;
     }
@@ -12,3 +8,26 @@ function checkEnvVar(key) {
         throw new Error("Environment variable not found");
     }
 }
+const migrationConfig = {
+    migrationsFolder: "./src/db/migrations",
+};
+export const dbConfig = {
+    migrationConfig: migrationConfig,
+    url: checkEnvVar('DB_URL')
+};
+// export let config:APIConfig = {
+//   fileserverHits:0,
+//   db: dbConfig,
+//   platform: checkEnvVar('PLATFORM')
+// }
+export const config = {
+    api: {
+        fileserverHits: 0,
+        platform: checkEnvVar('PLATFORM'),
+        port: 8080,
+    },
+    db: {
+        migrationConfig: migrationConfig,
+        url: checkEnvVar('DB_URL'),
+    }
+};

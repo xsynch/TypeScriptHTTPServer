@@ -1,5 +1,6 @@
 import type {Request, Response } from "express";
 import { config } from "../config.js";
+import { handlerResetUsers } from "./handleUsers.js";
 
 
 
@@ -8,7 +9,7 @@ export async function handlerHitsCounter(_:Request, res: Response){
 <html>
   <body>
     <h1>Welcome, Chirpy Admin</h1>
-    <p>Chirpy has been visited ${config.fileserverHits} times!</p>
+    <p>Chirpy has been visited ${config.api.fileserverHits} times!</p>
   </body>
 </html>
 `
@@ -20,8 +21,10 @@ export async function handlerHitsCounter(_:Request, res: Response){
 
 export async function handlerResetCounter(_:Request, res: Response){
     
-    config.fileserverHits = 0;
-    res.set('Content-Type','text/plain; charset=utf-8');
-	res.send(`Hits: ${config.fileserverHits}`);
+  config.api.fileserverHits = 0;
+  await handlerResetUsers()
+  res.set('Content-Type','text/plain; charset=utf-8');
+	res.status(200).send(`Hits: ${config.api.fileserverHits} and users deleted`);
+  
 	res.end();
 }

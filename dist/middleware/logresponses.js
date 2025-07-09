@@ -9,6 +9,6 @@ export function middlewareLogResponses(req, res, next) {
     });
 }
 export function middlewareMetricsInc(req, res, next) {
-    config.fileserverHits++;
+    config.api.fileserverHits++;
     next();
 }
