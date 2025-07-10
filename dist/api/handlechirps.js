@@ -1,5 +1,5 @@
-import { createChirp, getAllChirps } from "../db/queries/chirps.js";
-import { BadRequestError } from "./handleErrors.js";
+import { createChirp, getAllChirps, getOneChirp } from "../db/queries/chirps.js";
+import { BadRequestError, NotFoundError } from "./handleErrors.js";
 const bannedWords = ["KERFUFFLE", "SHARBERT", "FORNAX"];
 export async function handlerValidateChirp(req, res) {
     const responseBody = {
@@ -65,4 +65,14 @@ export async function handlerGetAllChirps(req, res) {
     const chirpResults = await getAllChirps();
     // console.log(chirpResults);
     res.status(200).json(chirpResults);
+}
+export async function handlerGetOneChirp(req, res) {
+    const chirpID = req.params["chirpID"];
+    const result = await getOneChirp(chirpID);
+    if (result) {
+        res.status(200).json(result);
+    }
+    else {
+        throw new NotFoundError("Chirp not found");
+    }
 }

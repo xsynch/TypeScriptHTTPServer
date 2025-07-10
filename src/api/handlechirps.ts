@@ -1,9 +1,9 @@
 import {Request, Response} from "express";
 
 
-import { createChirp, deleteChirp, getAllChirps } from "../db/queries/chirps.js";
+import { createChirp, deleteChirp, getAllChirps,getOneChirp } from "../db/queries/chirps.js";
 import { config } from "../config.js";
-import {BadRequestError } from "./handleErrors.js";
+import {BadRequestError, NotFoundError } from "./handleErrors.js";
 
 
 
@@ -117,4 +117,15 @@ export async function handlerGetAllChirps(req:Request,res:Response){
     const chirpResults = await getAllChirps();
     // console.log(chirpResults);
     res.status(200).json(chirpResults);
+}
+
+
+export async function handlerGetOneChirp(req:Request, res:Response){
+        const chirpID = req.params["chirpID"]
+        const result = await getOneChirp(chirpID)
+        if(result){
+            res.status(200).json(result)
+        } else {
+            throw new NotFoundError("Chirp not found")
+        }
 }

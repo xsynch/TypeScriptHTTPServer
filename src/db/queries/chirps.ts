@@ -21,3 +21,8 @@ export async function getAllChirps(){
     const result = await db.select().from(chirps).orderBy(asc(chirps.createdAt));
     return result;
 }
+
+export async function getOneChirp(chirpID:string){
+  const [chirp] = await db.select().from(chirps).where(eq(chirps.id,chirpID));
+  return chirp
+}
