@@ -10,6 +10,7 @@ import { handlerHitsCounter, handlerResetCounter } from "./api/hitscounter.js";
 import { handlerChirps, handlerGetAllChirps, handlerGetOneChirp } from "./api/handlechirps.js";
 import { errorHandler } from "./api/handleErrors.js";
 import { handlerUsers } from "./api/handleUsers.js";
+import { handlerLogin } from "./api/handlerLogin.js";
 
 const PORT = 8080;
 
@@ -50,6 +51,10 @@ app.get("/api/chirps", (req,res,next) => {
 
 app.get("/api/chirps/:chirpID", (req,res,next) => {
     Promise.resolve(handlerGetOneChirp(req,res).catch(next))
+});
+
+app.post("/api/login",(req,res,next) => {
+    Promise.resolve(handlerLogin(req,res).catch(next))
 });
 
 
