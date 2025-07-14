@@ -7,6 +7,7 @@ type APIConfig = {
   fileserverHits: number;
   port: number;
   platform: string;
+  secret: string;
 
 };
 
@@ -54,6 +55,7 @@ export const config:Config = {
     fileserverHits: 0,
     platform: checkEnvVar('PLATFORM'),    
     port: 8080,
+    secret: checkEnvVar('SECRET')
   },
   db: {
     migrationConfig: migrationConfig,

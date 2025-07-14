@@ -25,6 +25,7 @@ export const config = {
         fileserverHits: 0,
         platform: checkEnvVar('PLATFORM'),
         port: 8080,
+        secret: checkEnvVar('SECRET')
     },
     db: {
         migrationConfig: migrationConfig,

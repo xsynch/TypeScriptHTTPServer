@@ -1,5 +1,8 @@
 import { createChirp, getAllChirps, getOneChirp } from "../db/queries/chirps.js";
-import { BadRequestError, NotFoundError } from "./handleErrors.js";
+import { config } from "../config.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "./handleErrors.js";
+import { getBearerToken, validateJWT } from "../middleware/auth.js";
+import { selectUserPass } from "../db/queries/users.js";
 const bannedWords = ["KERFUFFLE", "SHARBERT", "FORNAX"];
 export async function handlerValidateChirp(req, res) {
     const responseBody = {
@@ -35,8 +38,15 @@ function ensureError(value) {
 }
 export async function handlerChirps(req, res) {
     const chirpReq = req.body;
-    if (!chirpReq.body || !chirpReq.userId) {
-        throw new BadRequestError("New Chirp requires body and userid ");
+    const bearerToken = getBearerToken(req);
+    const userId = validateJWT(bearerToken, config.api.secret);
+    if (!userId) {
+        console.log(`Not a valid JWT ${chirpReq.token}`);
+        throw new UnauthorizedError("Not a valid JWT");
+    }
+    const userUUID = await selectUserPass(userId);
+    if (!chirpReq.body) {
+        throw new BadRequestError("New Chirp requires body");
     }
     if (chirpReq.body.length > 140) {
         throw new BadRequestError("Chirp should be less than 140 characters");
@@ -51,7 +61,7 @@ export async function handlerChirps(req, res) {
     chirpReq.body = cleanedString.trimEnd();
     const result = await createChirp({
         body: chirpReq.body,
-        user_id: chirpReq.userId
+        user_id: userUUID.id
     });
     res.status(201).json({
         id: result.id,
