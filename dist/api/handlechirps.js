@@ -41,7 +41,7 @@ export async function handlerChirps(req, res) {
     const bearerToken = getBearerToken(req);
     const userId = validateJWT(bearerToken, config.api.secret);
     if (!userId) {
-        console.log(`Not a valid JWT ${chirpReq.token}`);
+        console.log(`Not a valid JWT ${bearerToken}`);
         throw new UnauthorizedError("Not a valid JWT");
     }
     const userUUID = await selectUserPass(userId);

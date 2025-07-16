@@ -22,3 +22,8 @@ export async function selectUserPass(email:string){
   return result;
 }
 
+
+export async function selectEmailFromID(userID: string){
+  const [result] = await db.select().from(users).where(eq(users.id,userID))
+  return result;
+}

@@ -10,6 +10,7 @@ import { handlerChirps, handlerGetAllChirps, handlerGetOneChirp } from "./api/ha
 import { errorHandler } from "./api/handleErrors.js";
 import { handlerUsers } from "./api/handleUsers.js";
 import { handlerLogin } from "./api/handlerLogin.js";
+import { handlerRefreshToken, handlerRevokeRefreshToken } from "./api/handlerRefreshtoken.js";
 const PORT = 8080;
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -37,6 +38,12 @@ app.get("/api/chirps/:chirpID", (req, res, next) => {
 });
 app.post("/api/login", (req, res, next) => {
     Promise.resolve(handlerLogin(req, res).catch(next));
+});
+app.post("/api/refresh", (req, res, next) => {
+    Promise.resolve(handlerRefreshToken(req, res).catch(next));
+});
+app.post("/api/revoke", (req, res, next) => {
+    Promise.resolve(handlerRevokeRefreshToken(req, res).catch(next));
 });
 app.use(errorHandler);
 app.listen(PORT, () => {

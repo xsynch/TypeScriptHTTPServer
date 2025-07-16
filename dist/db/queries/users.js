@@ -18,3 +18,7 @@ export async function selectUserPass(email) {
     const [result] = await db.select().from(users).where(eq(users.email, email));
     return result;
 }
+export async function selectEmailFromID(userID) {
+    const [result] = await db.select().from(users).where(eq(users.id, userID));
+    return result;
+}

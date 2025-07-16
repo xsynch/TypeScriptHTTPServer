@@ -74,15 +74,15 @@ function ensureError(value: unknown): Error {
 export async function handlerChirps(req:Request, res:Response){
     type chirpParams = {
         body: string;
-        userId: string;
-        token: string;
+        // userId: string;
+        // token: string;
     }
 
     const chirpReq: chirpParams = req.body 
     const bearerToken = getBearerToken(req)
     const userId = validateJWT(bearerToken, config.api.secret)
     if (!userId){
-        console.log(`Not a valid JWT ${chirpReq.token}`)
+        console.log(`Not a valid JWT ${bearerToken}`)
         throw new UnauthorizedError("Not a valid JWT")
     }
 
