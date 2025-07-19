@@ -6,9 +6,9 @@ import { config } from "./config.js";
 import { handlerReadiness } from "./api/readiness.js";
 import { middlewareLogResponses, middlewareMetricsInc } from "./middleware/logresponses.js";
 import { handlerHitsCounter, handlerResetCounter } from "./api/hitscounter.js";
-import { handlerChirps, handlerGetAllChirps, handlerGetOneChirp } from "./api/handlechirps.js";
+import { handlerChirps, handlerGetAllChirps, handlerGetOneChirp, handlerDeleteChirp } from "./api/handlechirps.js";
 import { errorHandler } from "./api/handleErrors.js";
-import { handlerUsers } from "./api/handleUsers.js";
+import { handlerUsers, handlerUpdateUsers, handlerUpgradeUsers } from "./api/handleUsers.js";
 import { handlerLogin } from "./api/handlerLogin.js";
 import { handlerRefreshToken, handlerRevokeRefreshToken } from "./api/handlerRefreshtoken.js";
 const PORT = 8080;
@@ -44,6 +44,15 @@ app.post("/api/refresh", (req, res, next) => {
 });
 app.post("/api/revoke", (req, res, next) => {
     Promise.resolve(handlerRevokeRefreshToken(req, res).catch(next));
+});
+app.put("/api/users", (req, res, next) => {
+    Promise.resolve(handlerUpdateUsers(req, res)).catch(next);
+});
+app.delete("/api/chirps/:chirpID", (req, res, next) => {
+    Promise.resolve(handlerDeleteChirp(req, res).catch(next));
+});
+app.post("/api/polka/webhooks", (req, res, next) => {
+    Promise.resolve(handlerUpgradeUsers(req, res).catch(next));
 });
 app.use(errorHandler);
 app.listen(PORT, () => {

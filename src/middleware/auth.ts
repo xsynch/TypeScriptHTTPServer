@@ -52,7 +52,7 @@ export function makeJWT(userID: string, expiresIn: number, secret: string): stri
 
 export function getBearerToken(req: Request): string {
     const authHeader = req.get('Authorization');
-    console.log(`Authorization header = ${authHeader}`)
+    
     let token:string = "";
     if(authHeader){
         token = authHeader.split(" ")[1]

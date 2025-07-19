@@ -58,6 +58,7 @@ export async function handlerLogin(req:Request, res:Response){
                 email: userCheck.email,
                 token: token,
                 refreshToken: userRefreshTokenData.token,
+                isChirpyRed: userCheck.is_chirpy_red,
             })
 
         } else {

@@ -16,7 +16,7 @@ export async function handlerRefreshToken(req:Request, res:Response){
         if(userInfo.revokedAt && userInfo.revokedAt < date ){
             throw new UnauthorizedError("Session has expired")
         }
-        console.log(`Creating new JWT for ${userEmail.email} which should be an email address`)
+        
         const newToken = makeJWT(userEmail.email, 3600, config.api.secret)
         res.status(200).json({
             token: newToken

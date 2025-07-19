@@ -22,3 +22,11 @@ export async function selectEmailFromID(userID) {
     const [result] = await db.select().from(users).where(eq(users.id, userID));
     return result;
 }
+export async function updateUserEmailAndPassword(userID, email, password) {
+    const [result] = await db.update(users).set({ hashed_password: password, email: email }).where(eq(users.id, userID)).returning();
+    return result;
+}
+export async function upgradeUserToChirpyRed(userID) {
+    const [result] = await db.update(users).set({ is_chirpy_red: true }).where(eq(users.id, userID)).returning();
+    return result;
+}

@@ -1,6 +1,6 @@
-import { createChirp, getAllChirps, getOneChirp } from "../db/queries/chirps.js";
+import { createChirp, deleteChirp, getAllChirps, getOneChirp } from "../db/queries/chirps.js";
 import { config } from "../config.js";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "./handleErrors.js";
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "./handleErrors.js";
 import { getBearerToken, validateJWT } from "../middleware/auth.js";
 import { selectUserPass } from "../db/queries/users.js";
 const bannedWords = ["KERFUFFLE", "SHARBERT", "FORNAX"];
@@ -84,5 +84,33 @@ export async function handlerGetOneChirp(req, res) {
     }
     else {
         throw new NotFoundError("Chirp not found");
+    }
+}
+export async function handlerDeleteChirp(req, res) {
+    const token = getBearerToken(req);
+    const userEmailFromToken = validateJWT(token, config.api.secret);
+    const chirpID = req.params["chirpID"];
+    const chirpResult = await getOneChirp(chirpID);
+    if (chirpResult) {
+        const userEmailFromDb = await selectUserPass(userEmailFromToken);
+        if (chirpResult.user_id != userEmailFromDb.id) {
+            console.log(`${userEmailFromToken} tried to delete ${userEmailFromDb.email}'s chirp`);
+            console.log(`chirp owner id: ${chirpResult.id} users id from db ${userEmailFromDb.id}'s chirp`);
+            throw new ForbiddenError("User cannot delete another user's chirp");
+        }
+        else {
+            const result = await deleteChirp(chirpID);
+            if (result) {
+                res.status(204).json({
+                    success: true,
+                });
+            }
+            else {
+                throw new Error("Failure deleting chirp from the database");
+            }
+        }
+    }
+    else {
+        throw new NotFoundError("Could not find chirp");
     }
 }
