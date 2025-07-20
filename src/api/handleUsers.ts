@@ -4,7 +4,7 @@ import {Request, Response} from "express";
 import { createUser, deleteUsers, selectUserPass, upgradeUserToChirpyRed } from "../db/queries/users.js";
 import { config } from "../config.js";
 import { ForbiddenError, UnauthorizedError } from "./handleErrors.js";
-import { getBearerToken, hashPassword, validateJWT } from "../middleware/auth.js";
+import { getAPIKey, getBearerToken, hashPassword, validateJWT } from "../middleware/auth.js";
 import { NewUser } from "../db/schema.js";
 import { updateUserEmailAndPassword } from "../db/queries/users.js";
 
@@ -103,6 +103,10 @@ export async function handlerUpdateUsers(req:Request, res:Response){
 }
 
 export async function handlerUpgradeUsers(req:Request, res:Response){
+    const apiKey = getAPIKey(req);
+    if(!apiKey || apiKey != config.api.polkakey){
+        throw new UnauthorizedError("Invalid Polka Key")
+    }
     type ParamsExpected = {
         event: string,
         data: {

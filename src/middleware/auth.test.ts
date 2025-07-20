@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { makeJWT, validateJWT } from "./auth";
-import { hashPassword, checkPasswordHash } from "./auth";
+import { hashPassword, checkPasswordHash, getAPIKey } from "./auth";
+import {Request } from "express"
 
 describe("Password Hashing", () => {
   const password1 = "correctPassword123!";
@@ -38,3 +39,4 @@ describe("Jwt Creation and Validation", () => {
         expect(result).toBe("jonathan")
     })
 })
+

@@ -6,6 +6,7 @@ import {  randomBytes } from "node:crypto";
 
 import { UnauthorizedError } from "../api/handleErrors.js";
 
+
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
 
 export function hashPassword(password: string): string {
@@ -72,4 +73,17 @@ export function makeRefreshToken(){
     const hexString = buf.toString('hex')
     
     return hexString;
+}
+
+export function getAPIKey(req: Request){
+    const authHeader = req.get('Authorization')
+    let authKey: string = "";
+    if(authHeader){
+        const apiHeader = authHeader.split(" ")
+        if(!apiHeader || apiHeader[0].toLocaleLowerCase() !== "apikey"){
+            throw new UnauthorizedError("Invalid Apikey")
+        } else {
+            return apiHeader[1];
+        }
+    }
 }

@@ -1,4 +1,5 @@
 
+import { check } from "drizzle-orm/gel-core";
 import type { MigrationConfig } from "drizzle-orm/migrator";
 
 
@@ -8,6 +9,7 @@ type APIConfig = {
   port: number;
   platform: string;
   secret: string;
+  polkakey: string;
 
 };
 
@@ -55,7 +57,8 @@ export const config:Config = {
     fileserverHits: 0,
     platform: checkEnvVar('PLATFORM'),    
     port: 8080,
-    secret: checkEnvVar('SECRET')
+    secret: checkEnvVar('SECRET'),
+    polkakey: checkEnvVar('POLKA_KEY')
   },
   db: {
     migrationConfig: migrationConfig,

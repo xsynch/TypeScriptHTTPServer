@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 
 
-import { createChirp, deleteChirp, getAllChirps,getOneChirp } from "../db/queries/chirps.js";
+import { createChirp, deleteChirp, getAllChirps,getOneChirp, getChirpsByUser, getChirpsAscending, getChirpsDescending } from "../db/queries/chirps.js";
 import { config } from "../config.js";
 import {BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "./handleErrors.js";
 import { getBearerToken, validateJWT } from "../middleware/auth.js";
@@ -79,6 +79,8 @@ export async function handlerChirps(req:Request, res:Response){
         // token: string;
     }
 
+
+
     const chirpReq: chirpParams = req.body 
     const bearerToken = getBearerToken(req)
     const userId = validateJWT(bearerToken, config.api.secret)
@@ -129,9 +131,41 @@ export async function handlerGetAllChirps(req:Request,res:Response){
         userId: string;
     }
 
-    const chirpResults = await getAllChirps();
-    // console.log(chirpResults);
-    res.status(200).json(chirpResults);
+    let sort = "";
+    let sortQuery = req.query.sort;
+    if(typeof sortQuery === "string"){
+         sort = sortQuery;
+    }
+    if(sort && sort === "asc"){
+        const resultAscending = await getChirpsAscending();        
+        res.status(200).json(resultAscending);
+        return;
+    } else if (sort && sort === "desc"){
+        const resultsDescending = await getChirpsDescending()
+        console.log("sorting chirps descending")
+        res.status(200).json(resultsDescending);
+        return;
+    }
+
+
+    let authID = "";
+    let authQuery = req.query.authorId;
+    if(typeof authQuery === "string"){
+        authID = authQuery;
+    }
+    if(!authID){
+
+        const chirpResults = await getAllChirps();        
+        res.status(200).json(chirpResults);
+    } else {
+        const userChiprs = await getChirpsByUser(authID);
+        if(userChiprs) {
+            
+            res.status(200).json(userChiprs);
+        } else {
+            throw new Error("No chirps found for the user")
+        }
+    }
 }
 
 
